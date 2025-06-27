@@ -1,0 +1,98 @@
+# A.I. Apex Brain Configuration Template
+# Copy this file to apex-brain.env and fill in your actual values
+
+# ================================
+# REQUIRED: Server Configuration
+# ================================
+
+# Hetzner Cloud API Token (from Hetzner Console -> Security -> API Tokens)
+HETZNER_TOKEN=your_hetzner_api_token_here
+
+# SSH Key Name (must match the name you uploaded to Hetzner)
+SSH_KEY_NAME=apex-brain-deployment-key
+
+# ================================
+# REQUIRED: Database Configuration
+# ================================
+
+# PostgreSQL Password (generate a strong password)
+POSTGRES_PASSWORD=generate_strong_password_here
+
+# Redis Password (generate a strong password)
+REDIS_PASSWORD=generate_strong_password_here
+
+# ================================
+# REQUIRED: AI Model Configuration
+# ================================
+
+# Hugging Face Token (from HuggingFace.co -> Settings -> Access Tokens)
+HUGGINGFACE_TOKEN=your_huggingface_token_here
+
+# ================================
+# OPTIONAL: GitHub Configuration
+# ================================
+
+# GitHub Personal Access Token (for repository operations)
+GITHUB_TOKEN=your_github_personal_access_token_here
+
+# GitHub Username
+GITHUB_USERNAME=your_github_username_here
+
+# ================================
+# OPTIONAL: Domain Configuration
+# ================================
+
+# Custom Domain Name (leave empty to use IP address)
+DOMAIN_NAME=
+
+# Email for SSL Certificate (required if using custom domain)
+SSL_EMAIL=your_email_for_letsencrypt@example.com
+
+# ================================
+# DEPLOYMENT CONFIGURATION
+# ================================
+
+# Server Region (ash=Ashburn, hel=Helsinki, nbg=Nuremberg)
+DEPLOYMENT_REGION=ash
+
+# Server Type (cx31=2vCPU/8GB, cx41=4vCPU/16GB, cx51=8vCPU/32GB)
+INSTANCE_TYPE=cx31
+
+# Additional Storage Size in GB
+STORAGE_SIZE=40
+
+# ================================
+# ADVANCED CONFIGURATION
+# ================================
+
+# Algorithm Framework Mode (basic, advanced, production)
+ALGORITHM_MODE=advanced
+
+# Quantum Enhancement (true/false)
+QUANTUM_ENHANCEMENT=true
+
+# Auto-scaling (true/false)
+AUTO_SCALING=true
+
+# Monitoring Level (basic, advanced, enterprise)
+MONITORING_LEVEL=advanced
+
+# Voice Interface (true/false)
+VOICE_ENABLED=true
+
+# ================================
+# INSTRUCTIONS
+# ================================
+
+# 1. Copy this file: cp apex-brain.env.example apex-brain.env
+# 2. Edit apex-brain.env with your actual values
+# 3. Generate strong passwords for POSTGRES_PASSWORD and REDIS_PASSWORD
+# 4. Get your Hetzner API token from the Hetzner Console
+# 5. Get your Hugging Face token from HuggingFace.co
+# 6. Run the deployment: ./deploy-apex-brain.sh
+
+# Password Generation Commands:
+# openssl rand -base64 32  # For POSTGRES_PASSWORD
+# openssl rand -base64 32  # For REDIS_PASSWORD
+
+# Total Monthly Cost: €23.46 (with default cx31 + 40GB storage)
