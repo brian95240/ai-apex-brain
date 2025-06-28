@@ -1,0 +1,110 @@
+# A.I. Apex Brain - Auto-Scaling Configuration
+# Advanced auto-scaling and resource management
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apex-brain-scaling-config
+  namespace: apex-brain
+data:
+  scaling.yaml: |
+    # Horizontal Pod Autoscaler (HPA)
+    hpa:
+      enabled: true
+      target_cpu_utilization: 70
+      target_memory_utilization: 80
+      min_replicas: 1
+      max_replicas: 5
+      scale_up_cooldown: "3m"
+      scale_down_cooldown: "5m"
+
+    # Service-Specific Scaling
+    services:
+      llm_engine:
+        min_replicas: 1
+        max_replicas: 3
+        target_cpu: 70
+        target_memory: 80
+        scale_based_on:
+          - "cpu_utilization"
+          - "memory_utilization"
+          - "request_queue_length"
+
+      algorithmic_engine:
+        min_replicas: 1
+        max_replicas: 2
+        target_cpu: 60
+        target_memory: 75
+        scale_based_on:
+          - "algorithm_execution_time"
+          - "queue_depth"
+
+      apex_brain_ui:
+        min_replicas: 1
+        max_replicas: 3
+        target_cpu: 50
+        target_memory: 60
+        scale_based_on:
+          - "concurrent_users"
+          - "response_time"
+
+    # Vertical Pod Autoscaler (VPA)
+    vpa:
+      enabled: true
+      update_mode: "Auto"
+      resource_policies:
+        - container: "llm-engine"
+          min_allowed:
+            cpu: "500m"
+            memory: "1Gi"
+          max_allowed:
+            cpu: "4000m"
+            memory: "8Gi"
+
+    # Custom Scaling Metrics
+    custom_metrics:
+      - name: "algorithm_queue_depth"
+        target_value: 10
+        scale_direction: "up"
+
+      - name: "average_response_time"
+        target_value: 2000          # 2 seconds in ms
+        scale_direction: "up"
+
+      - name: "error_rate"
+        target_value: 0.05          # 5% error rate
+        scale_direction: "up"
+
+    # Time-Based Scaling
+    scheduled_scaling:
+      enabled: true
+      schedules:
+        - name: "business_hours"
+          schedule: "0 9 * * 1-5"   # 9 AM weekdays
+          min_replicas: 2
+          max_replicas: 5
+
+        - name: "off_hours"
+          schedule: "0 18 * * 1-5"  # 6 PM weekdays
+          min_replicas: 1
+          max_replicas: 2
+
+    # Predictive Scaling
+    predictive_scaling:
+      enabled: true
+      look_ahead_time: "30m"
+      confidence_threshold: 0.8
+      scale_proactively: true
+
+    # Resource Quotas
+    resource_quotas:
+      cpu_limit: "16000m"          # 16 CPU cores max
+      memory_limit: "32Gi"         # 32GB RAM max
+      storage_limit: "200Gi"       # 200GB storage max
+
+    # Cost Optimization
+    cost_optimization:
+      enabled: true
+      target_utilization: 75
+      prefer_efficiency: true
+      spot_instances: false        # Not available on Hetzner
