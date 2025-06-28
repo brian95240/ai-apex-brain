@@ -1,0 +1,89 @@
+# A.I. Apex Brain - Custom Models Configuration
+# Configure custom AI models for specific use cases
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apex-brain-models-config
+  namespace: apex-brain
+data:
+  models.yaml: |
+    # Language Models
+    language_models:
+      - name: "custom-business-llm"
+        type: "language_model"
+        source: "huggingface"
+        model_id: "microsoft/DialoGPT-large"
+        description: "Large conversational model for business use"
+        parameters:
+          max_length: 2048
+          temperature: 0.7
+          top_p: 0.9
+        resources:
+          memory: "6Gi"
+          cpu: "2000m"
+        quantization: "8bit"
+
+      - name: "code-assistant"
+        type: "code_model"
+        source: "huggingface"
+        model_id: "Salesforce/codegen-350M-mono"
+        description: "Code generation and assistance"
+        parameters:
+          max_length: 1024
+          temperature: 0.2
+
+    # Voice Models
+    voice_models:
+      - name: "premium-tts"
+        type: "text_to_speech"
+        source: "local"
+        model_path: "/models/voice/premium-tts-v2.pt"
+        description: "High-quality text-to-speech"
+        languages: ["en", "es", "fr"]
+        quality: "high"
+
+      - name: "multilingual-asr"
+        type: "speech_to_text"
+        source: "huggingface"
+        model_id: "openai/whisper-large-v3"
+        description: "Multilingual speech recognition"
+        languages: ["en", "es", "fr", "de", "it"]
+
+    # Embedding Models
+    embedding_models:
+      - name: "semantic-search"
+        type: "embedding"
+        source: "huggingface"
+        model_id: "sentence-transformers/all-MiniLM-L6-v2"
+        description: "Semantic similarity and search"
+        dimension: 384
+
+    # Specialized Models
+    specialized_models:
+      - name: "sentiment-analyzer"
+        type: "classification"
+        source: "huggingface"
+        model_id: "cardiffnlp/twitter-roberta-base-sentiment-latest"
+        description: "Sentiment analysis for text"
+
+      - name: "entity-extractor"
+        type: "named_entity_recognition"
+        source: "huggingface"
+        model_id: "dbmdz/bert-large-cased-finetuned-conll03-english"
+        description: "Named entity recognition"
+
+    # Model Deployment Settings
+    deployment:
+      auto_load: true
+      lazy_loading: true
+      cache_models: true
+      model_cache_size: "10Gi"
+      concurrent_models: 5
+
+    # Model Update Settings
+    updates:
+      auto_update: false
+      update_schedule: "weekly"
+      backup_before_update: true
+      rollback_enabled: true
