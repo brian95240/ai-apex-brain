@@ -1,0 +1,68 @@
+# A.I. Apex Brain - Development Configuration
+# Suitable for: Developers, testing, experimentation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apex-brain-dev-config
+  namespace: apex-brain
+data:
+  system.yaml: |
+    deployment:
+      mode: "development"
+      environment: "development"
+      debug_mode: true
+
+    infrastructure:
+      server_type: "cx21"        # 2 vCPU, 4GB RAM (minimal)
+      storage_size: "20GB"
+      region: "ash"
+      auto_scaling: false
+
+    # Minimal Algorithm Set for Development
+    algorithms:
+      lazy_loading: true
+      cascade_depth: 2
+      quantum_enhancement: false  # Disabled for faster startup
+      development_mode: true
+      debug_algorithms: true
+      preload_algorithms:
+        - "QueryIntentPredictor"
+        - "MetaLearningPattern"
+
+    # Development Resources (Minimal)
+    resources:
+      postgresql:
+        memory_limit: "1Gi"
+        cpu_limit: "500m"
+        storage: "10Gi"
+      redis:
+        memory_limit: "256Mi"
+        cpu_limit: "100m"
+      llm_engine:
+        memory_limit: "2Gi"
+        cpu_limit: "1000m"
+        model: "gpt2"              # Lightweight model
+      algorithmic_engine:
+        memory_limit: "512Mi"
+        cpu_limit: "250m"
+
+    # Development Features
+    voice:
+      enabled: false             # Disabled for development
+
+    monitoring:
+      basic_logs: true
+      debug_logs: true
+      metrics: false
+
+    security:
+      basic_auth: false          # Disabled for development
+      api_rate_limit: 1000
+      ssl_enabled: false
+
+    development:
+      hot_reload: true
+      api_docs: true
+      debug_endpoints: true
+      test_data: true
