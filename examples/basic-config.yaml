@@ -1,0 +1,66 @@
+# A.I. Apex Brain - Basic Configuration
+# Suitable for: Small teams, personal use, testing
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apex-brain-basic-config
+  namespace: apex-brain
+data:
+  # System Configuration
+  system.yaml: |
+    deployment:
+      mode: "basic"
+      environment: "development"
+      cost_optimization: true
+
+    infrastructure:
+      server_type: "cx31"        # 2 vCPU, 8GB RAM
+      storage_size: "40GB"
+      region: "ash"              # Ashburn, VA
+      auto_scaling: false
+
+    # Algorithm Framework Settings
+    algorithms:
+      lazy_loading: true
+      cascade_depth: 3           # Reduced for basic setup
+      quantum_enhancement: true
+      preload_algorithms:
+        - "TemporalSequencePredictor"
+        - "QueryIntentPredictor"
+        - "MetaLearningPattern"
+
+    # Resource Limits
+    resources:
+      postgresql:
+        memory_limit: "2Gi"
+        cpu_limit: "1000m"
+      redis:
+        memory_limit: "512Mi"
+        cpu_limit: "250m"
+      llm_engine:
+        memory_limit: "3Gi"
+        cpu_limit: "1500m"
+        model: "microsoft/DialoGPT-medium"  # Lighter model
+      algorithmic_engine:
+        memory_limit: "1Gi"
+        cpu_limit: "500m"
+
+    # Voice Configuration
+    voice:
+      enabled: true
+      default_profile: "professional"
+      synthesis_quality: "standard"
+      languages: ["en"]
+
+    # Monitoring
+    monitoring:
+      basic_health_checks: true
+      detailed_metrics: false
+      log_retention: "7d"
+
+    # Security
+    security:
+      basic_auth: true
+      api_rate_limit: 100        # requests/hour
+      ssl_enabled: false         # For development
