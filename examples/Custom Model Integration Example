@@ -1,0 +1,11 @@
+# 1. Configure custom models
+cp examples/custom-models.yaml kubernetes/models-config.yaml
+
+# 2. Upload your models via API
+curl -X POST http://YOUR_SERVER_IP:30000/api/v1/models/upload \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "model_file=@your-custom-model.pt" \
+  -F "config=@model-config.json"
+
+# 3. Verify model deployment
+curl http://YOUR_SERVER_IP:30000/api/v1/models
