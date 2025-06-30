@@ -331,8 +331,10 @@ class VertexOrchestrator:
             'timestamp': time.time()
         }
         
-        # Add to priority queue
-        await self.task_queue.put((priority.value, task_data))
+        # Add to priority queue with unique counter to avoid comparison issues
+        task_counter = getattr(self, '_task_counter', 0)
+        self._task_counter = task_counter + 1
+        await self.task_queue.put((priority.value, task_counter, task_data))
         
         # Wait for result
         result_future = asyncio.Future()
@@ -393,7 +395,7 @@ class VertexOrchestrator:
         while self._running:
             try:
                 # Get task from queue with timeout
-                priority, task_data = await asyncio.wait_for(
+                priority, task_counter, task_data = await asyncio.wait_for(
                     self.task_queue.get(), timeout=1.0
                 )
                 

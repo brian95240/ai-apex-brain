@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-06-30 08:24:28",
+  "hetzner_servers": [],
+  "kubernetes_clusters": [],
+  "neon_databases": [],
+  "existing_services": [
+    {
+      "type": "process",
+      "pid": "2610",
+      "command": "/usr/lib/git-core/git remote-https origin https://github.com/brian95240/ai-apex-brain.git",
+      "cpu": "0.0",
+      "memory": "0.0"
+    },
+    {
+      "type": "process",
+      "pid": "2611",
+      "command": "/usr/lib/git-core/git-remote-https origin https://github.com/brian95240/ai-apex-brain.git",
+      "cpu": "0.0",
+      "memory": "0.4"
+    }
+  ],
+  "recommendations": [
+    "No existing Hetzner servers found. New server deployment required.",
+    "No existing Kubernetes clusters found. Consider creating new cluster or using Docker deployment.",
+    "No Neon database connection found. Database setup required.",
+    "Found 2 existing services that might conflict with new deployment.",
+    "No existing infrastructure found. Fresh deployment recommended."
+  ]
+}
