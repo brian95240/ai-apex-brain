@@ -1,0 +1,462 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: apex-brain
+  labels:
+    name: apex-brain
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vertex-orchestrator
+  namespace: apex-brain
+  labels:
+    app: vertex-orchestrator
+    component: core
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vertex-orchestrator
+  template:
+    metadata:
+      labels:
+        app: vertex-orchestrator
+    spec:
+      containers:
+      - name: vertex-orchestrator
+        image: python:3.11-slim
+        ports:
+        - containerPort: 8001
+        - containerPort: 8080  # Metrics port
+        env:
+        - name: PYTHONPATH
+          value: "/app/src"
+        - name: MAX_CONCURRENT_TASKS
+          value: "50"
+        - name: CACHE_SIZE
+          value: "1000"
+        - name: PROMETHEUS_PORT
+          value: "8080"
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          pip install fastapi uvicorn prometheus-client numpy psutil asyncio
+          cat > /app/main.py << 'EOF'
+          import asyncio
+          import uvicorn
+          from fastapi import FastAPI
+          from prometheus_client import Counter, Histogram, Gauge, generate_latest
+          from fastapi.responses import Response
+          import sys
+          import os
+          sys.path.append('/app/src')
+          
+          from vertex_orchestrator import create_vertex_orchestrator, AlgorithmPriority
+          
+          app = FastAPI(title="Vertex Orchestrator API")
+          
+          # Prometheus metrics
+          algorithm_executions = Counter('algorithm_executions_total', 'Total algorithm executions', ['algorithm_id'])
+          execution_duration = Histogram('algorithm_execution_duration_seconds', 'Algorithm execution duration', ['algorithm_id'])
+          active_tasks = Gauge('vertex_active_tasks', 'Active tasks per vertex', ['vertex_id'])
+          load_factor = Gauge('vertex_load_factor', 'Load factor per vertex', ['vertex_id'])
+          
+          # Global orchestrator
+          orchestrator = None
+          
+          @app.on_event("startup")
+          async def startup_event():
+              global orchestrator
+              orchestrator = create_vertex_orchestrator(max_concurrent_tasks=50)
+              await orchestrator.start()
+          
+          @app.on_event("shutdown")
+          async def shutdown_event():
+              if orchestrator:
+                  await orchestrator.stop()
+          
+          @app.post("/execute")
+          async def execute_algorithm(request: dict):
+              task_id = request.get('task_id', f"task_{int(time.time())}")
+              algorithm_id = request['algorithm_id']
+              data = request['data']
+              priority = AlgorithmPriority(request.get('priority', 3))
+              
+              with execution_duration.labels(algorithm_id=algorithm_id).time():
+                  result = await orchestrator.execute_task(task_id, algorithm_id, data, priority)
+              
+              algorithm_executions.labels(algorithm_id=algorithm_id).inc()
+              return {"task_id": task_id, "result": result}
+          
+          @app.post("/cascade")
+          async def execute_cascade(request: dict):
+              chain_id = request['chain_id']
+              data = request['data']
+              priority = AlgorithmPriority(request.get('priority', 3))
+              
+              result = await orchestrator.execute_cascade(chain_id, data, priority)
+              return {"chain_id": chain_id, "result": result}
+          
+          @app.post("/compound")
+          async def execute_compound(request: dict):
+              group_id = request['group_id']
+              data = request['data']
+              priority = AlgorithmPriority(request.get('priority', 3))
+              
+              result = await orchestrator.execute_compound(group_id, data, priority)
+              return {"group_id": group_id, "result": result}
+          
+          @app.get("/metrics")
+          async def metrics():
+              # Update vertex metrics
+              for vertex_id, vertex in orchestrator.vertices.items():
+                  active_tasks.labels(vertex_id=vertex_id).set(vertex.active_tasks)
+                  load_factor.labels(vertex_id=vertex_id).set(vertex.load_factor)
+              
+              return Response(generate_latest(), media_type="text/plain")
+          
+          @app.get("/health")
+          async def health():
+              return {"status": "healthy", "vertices": len(orchestrator.vertices)}
+          
+          if __name__ == "__main__":
+              uvicorn.run(app, host="0.0.0.0", port=8001)
+          EOF
+          
+          mkdir -p /app/src
+          cp -r /app/src/* /app/src/ 2>/dev/null || true
+          cd /app && python main.py
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vertex-orchestrator-service
+  namespace: apex-brain
+spec:
+  selector:
+    app: vertex-orchestrator
+  ports:
+  - name: api
+    port: 8001
+    targetPort: 8001
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: algorithm-registry
+  namespace: apex-brain
+  labels:
+    app: algorithm-registry
+    component: core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: algorithm-registry
+  template:
+    metadata:
+      labels:
+        app: algorithm-registry
+    spec:
+      containers:
+      - name: algorithm-registry
+        image: python:3.11-slim
+        ports:
+        - containerPort: 8002
+        - containerPort: 8081  # Metrics port
+        env:
+        - name: PYTHONPATH
+          value: "/app/src"
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          pip install fastapi uvicorn prometheus-client numpy scikit-learn
+          cat > /app/registry_api.py << 'EOF'
+          import uvicorn
+          from fastapi import FastAPI, HTTPException
+          from prometheus_client import Counter, Histogram, generate_latest
+          from fastapi.responses import Response
+          import sys
+          sys.path.append('/app/src')
+          
+          from algorithms.algorithm_registry import get_algorithm_registry
+          
+          app = FastAPI(title="Algorithm Registry API")
+          
+          # Prometheus metrics
+          algorithm_calls = Counter('algorithm_calls_total', 'Total algorithm calls', ['algorithm_id'])
+          algorithm_duration = Histogram('algorithm_duration_seconds', 'Algorithm execution duration', ['algorithm_id'])
+          algorithm_errors = Counter('algorithm_errors_total', 'Algorithm execution errors', ['algorithm_id'])
+          
+          registry = get_algorithm_registry()
+          
+          @app.post("/execute/{algorithm_id}")
+          async def execute_algorithm(algorithm_id: str, request: dict):
+              try:
+                  data = request.get('data')
+                  context = request.get('context')
+                  
+                  with algorithm_duration.labels(algorithm_id=algorithm_id).time():
+                      result = await registry.execute_algorithm(algorithm_id, data, context)
+                  
+                  algorithm_calls.labels(algorithm_id=algorithm_id).inc()
+                  return {"algorithm_id": algorithm_id, "result": result}
+              
+              except Exception as e:
+                  algorithm_errors.labels(algorithm_id=algorithm_id).inc()
+                  raise HTTPException(status_code=500, detail=str(e))
+          
+          @app.get("/algorithms")
+          async def list_algorithms():
+              return {"algorithms": registry.list_algorithms()}
+          
+          @app.get("/algorithms/{algorithm_id}/stats")
+          async def get_algorithm_stats(algorithm_id: str):
+              algorithm = registry.get_algorithm(algorithm_id)
+              if not algorithm:
+                  raise HTTPException(status_code=404, detail="Algorithm not found")
+              return algorithm.get_performance_stats()
+          
+          @app.get("/performance")
+          async def get_performance_stats():
+              return registry.get_performance_stats()
+          
+          @app.get("/metrics")
+          async def metrics():
+              return Response(generate_latest(), media_type="text/plain")
+          
+          @app.get("/health")
+          async def health():
+              return {"status": "healthy", "algorithms": len(registry.algorithms)}
+          
+          if __name__ == "__main__":
+              uvicorn.run(app, host="0.0.0.0", port=8002)
+          EOF
+          
+          mkdir -p /app/src
+          cp -r /app/src/* /app/src/ 2>/dev/null || true
+          cd /app && python registry_api.py
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "125m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: algorithm-registry-service
+  namespace: apex-brain
+spec:
+  selector:
+    app: algorithm-registry
+  ports:
+  - name: api
+    port: 8002
+    targetPort: 8002
+  - name: metrics
+    port: 8081
+    targetPort: 8081
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: apex-brain
+  labels:
+    app: prometheus
+    component: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:latest
+        ports:
+        - containerPort: 9090
+        args:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=/prometheus/'
+        - '--web.console.libraries=/etc/prometheus/console_libraries'
+        - '--web.console.templates=/etc/prometheus/consoles'
+        - '--storage.tsdb.retention.time=200h'
+        - '--web.enable-lifecycle'
+        volumeMounts:
+        - name: prometheus-config
+          mountPath: /etc/prometheus/
+        - name: prometheus-storage
+          mountPath: /prometheus/
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: prometheus-config
+        configMap:
+          name: prometheus-config
+      - name: prometheus-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: apex-brain
+spec:
+  selector:
+    app: prometheus
+  ports:
+  - port: 9090
+    targetPort: 9090
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: apex-brain
+  labels:
+    app: grafana
+    component: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          value: "admin123"
+        - name: GF_INSTALL_PLUGINS
+          value: "grafana-piechart-panel"
+        volumeMounts:
+        - name: grafana-storage
+          mountPath: /var/lib/grafana
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "125m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: grafana-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: apex-brain
+spec:
+  selector:
+    app: grafana
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: apex-brain
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+      - job_name: 'vertex-orchestrator'
+        static_configs:
+          - targets: ['vertex-orchestrator-service:8080']
+        metrics_path: '/metrics'
+        scrape_interval: 5s
+
+      - job_name: 'algorithm-registry'
+        static_configs:
+          - targets: ['algorithm-registry-service:8081']
+        metrics_path: '/metrics'
+        scrape_interval: 5s
+
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - apex-brain
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+          action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+

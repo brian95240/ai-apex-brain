@@ -1,0 +1,256 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "AI Apex Brain - Advanced Monitoring Dashboard",
+    "tags": ["ai", "apex-brain", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"apex-brain-core\"}",
+            "legendFormat": "Core Service Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Algorithm Execution Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(algorithm_executions_total[5m])",
+            "legendFormat": "{{algorithm_id}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Executions/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Resource Utilization",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+            "legendFormat": "CPU Usage %"
+          },
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+            "legendFormat": "Memory Usage %"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Percentage",
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Vertex Orchestrator Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "vertex_active_tasks",
+            "legendFormat": "Active Tasks - {{vertex_id}}"
+          },
+          {
+            "expr": "vertex_load_factor",
+            "legendFormat": "Load Factor - {{vertex_id}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Algorithm Cache Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "algorithm_cache_hit_rate",
+            "legendFormat": "Cache Hit Rate - {{algorithm_id}}"
+          },
+          {
+            "expr": "algorithm_cache_size",
+            "legendFormat": "Cache Size - {{algorithm_id}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Cost Tracking",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(cost_per_hour)",
+            "legendFormat": "Current Hourly Cost"
+          },
+          {
+            "expr": "sum(cost_daily_total)",
+            "legendFormat": "Daily Total Cost"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 5},
+                {"color": "red", "value": 10}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Algorithm Execution Time",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(algorithm_execution_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th Percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(algorithm_execution_duration_seconds_bucket[5m]))",
+            "legendFormat": "50th Percentile"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(algorithm_errors_total[5m])",
+            "legendFormat": "Error Rate - {{algorithm_id}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Errors/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16}
+      },
+      {
+        "id": 9,
+        "title": "Cascade Chain Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "cascade_chain_execution_time",
+            "legendFormat": "Execution Time - {{chain_id}}"
+          },
+          {
+            "expr": "cascade_chain_success_rate",
+            "legendFormat": "Success Rate - {{chain_id}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 10,
+        "title": "Compound Group Efficiency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "compound_group_efficiency",
+            "legendFormat": "Efficiency - {{group_id}}"
+          },
+          {
+            "expr": "compound_group_parallelism",
+            "legendFormat": "Parallelism Factor - {{group_id}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 11,
+        "title": "Lazy Loading Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "lazy_loader_cache_size",
+            "legendFormat": "Cache Size"
+          },
+          {
+            "expr": "lazy_loader_evictions_total",
+            "legendFormat": "Cache Evictions"
+          },
+          {
+            "expr": "lazy_loader_load_time",
+            "legendFormat": "Load Time"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32}
+      },
+      {
+        "id": 12,
+        "title": "Network I/O",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(node_network_receive_bytes_total[5m])",
+            "legendFormat": "Receive {{device}}"
+          },
+          {
+            "expr": "rate(node_network_transmit_bytes_total[5m])",
+            "legendFormat": "Transmit {{device}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Bytes/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s",
+    "schemaVersion": 27,
+    "version": 1
+  }
+}
+

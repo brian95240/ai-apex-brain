@@ -1,0 +1,102 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # AI Apex Brain Core Services
+  - job_name: 'apex-brain-core'
+    static_configs:
+      - targets: ['localhost:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  # Vertex Orchestrator
+  - job_name: 'vertex-orchestrator'
+    static_configs:
+      - targets: ['localhost:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  # Algorithm Registry
+  - job_name: 'algorithm-registry'
+    static_configs:
+      - targets: ['localhost:8002']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  # Granular Swarm Control Dashboard
+  - job_name: 'swarm-dashboard'
+    static_configs:
+      - targets: ['localhost:3000']
+    metrics_path: '/api/metrics'
+    scrape_interval: 10s
+
+  # System Metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  # Database Metrics
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['localhost:9187']
+
+  # Redis Metrics
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['localhost:9121']
+
+  # Custom AI Brain Metrics
+  - job_name: 'ai-brain-metrics'
+    static_configs:
+      - targets: ['localhost:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      'module': ['ai_brain']
+
+  # Algorithm Performance Metrics
+  - job_name: 'algorithm-performance'
+    static_configs:
+      - targets: ['localhost:8003']
+    metrics_path: '/algorithm-metrics'
+    scrape_interval: 10s
+
+  # Resource Usage Metrics
+  - job_name: 'resource-monitor'
+    static_configs:
+      - targets: ['localhost:8004']
+    metrics_path: '/resource-metrics'
+    scrape_interval: 5s
+
+  # Cost Tracking Metrics
+  - job_name: 'cost-tracker'
+    static_configs:
+      - targets: ['localhost:8005']
+    metrics_path: '/cost-metrics'
+    scrape_interval: 30s
+
+# Remote write configuration for long-term storage
+remote_write:
+  - url: "http://localhost:8086/api/v1/prom/write?db=prometheus"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500
+
