@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Apex Brain - Mobile Command Center</title>
+    <title>A.I. Apex Brain - Mobile Command Center</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a1a1a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -61,16 +61,10 @@
             text-shadow: 0 0 20px #00d4ff;
             margin-bottom: 10px;
             position: relative;
-        }
-
-        .logo::before {
-            content: '🧠';
-            position: absolute;
-            left: -40px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 30px;
-            filter: drop-shadow(0 0 10px #00d4ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .status-indicator {
@@ -87,6 +81,154 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
+        }
+
+        /* 3D Metallic Brain Logo for Mobile */
+        .metallic-brain {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            animation: brainFloat 3s ease-in-out infinite;
+            margin-right: 15px;
+        }
+
+        .brain-core {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(145deg, #c0c0c0, #808080);
+            border-radius: 50% 50% 45% 55% / 60% 65% 35% 40%;
+            position: relative;
+            box-shadow: 
+                0 0 15px rgba(192, 192, 192, 0.3),
+                inset 0 2px 3px rgba(255, 255, 255, 0.4),
+                inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+                0 6px 12px rgba(0, 0, 0, 0.4);
+            transform: rotateX(15deg) rotateY(-15deg);
+            transition: all 0.3s ease;
+        }
+
+        .brain-core::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 9px;
+            width: 12px;
+            height: 15px;
+            background: linear-gradient(135deg, #e0e0e0, #a0a0a0);
+            border-radius: 50% 40% 60% 30% / 70% 50% 50% 30%;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.6),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+            transform: rotateZ(10deg);
+        }
+
+        .brain-core::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            right: 6px;
+            width: 11px;
+            height: 14px;
+            background: linear-gradient(135deg, #d0d0d0, #909090);
+            border-radius: 40% 50% 30% 60% / 50% 70% 30% 50%;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+            transform: rotateZ(-15deg);
+        }
+
+        .brain-highlight {
+            position: absolute;
+            top: 5px;
+            left: 6px;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+            border-radius: 50%;
+            filter: blur(0.5px);
+        }
+
+        .brain-neural-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .neural-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            height: 1px;
+            animation: neuralPulse 2s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        .neural-line:nth-child(1) {
+            top: 12px;
+            left: 4px;
+            width: 24px;
+            animation-delay: 0s;
+            transform: rotate(25deg);
+        }
+
+        .neural-line:nth-child(2) {
+            top: 20px;
+            left: 6px;
+            width: 20px;
+            animation-delay: 0.5s;
+            transform: rotate(-15deg);
+        }
+
+        .neural-line:nth-child(3) {
+            top: 16px;
+            right: 4px;
+            width: 16px;
+            animation-delay: 1s;
+            transform: rotate(45deg);
+        }
+
+        @keyframes brainFloat {
+            0%, 100% { 
+                transform: translateY(0px) rotateY(0deg);
+            }
+            50% { 
+                transform: translateY(-2px) rotateY(5deg);
+            }
+        }
+
+        @keyframes neuralPulse {
+            0%, 100% { 
+                opacity: 0.3;
+                transform: scaleX(0.8);
+            }
+            50% { 
+                opacity: 0.8;
+                transform: scaleX(1.2);
+            }
+        }
+
+        .metallic-brain:hover .brain-core {
+            transform: rotateX(25deg) rotateY(-25deg) scale(1.1);
+            box-shadow: 
+                0 0 25px rgba(192, 192, 192, 0.5),
+                inset 0 2px 4px rgba(255, 255, 255, 0.5),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.4),
+                0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .corporate-brain {
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        .corporate-brain .brain-core {
+            background: linear-gradient(145deg, #b8b8b8, #707070, #909090);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .control-panel {
@@ -347,7 +489,17 @@
     <div class="container">
         <div class="header">
             <div class="logo">
-                AI APEX BRAIN
+                <div class="metallic-brain corporate-brain">
+                    <div class="brain-core">
+                        <div class="brain-highlight"></div>
+                        <div class="brain-neural-lines">
+                            <div class="neural-line"></div>
+                            <div class="neural-line"></div>
+                            <div class="neural-line"></div>
+                        </div>
+                    </div>
+                </div>
+                A.I. APEX BRAIN
                 <span class="status-indicator"></span>
             </div>
             <div style="color: #888; font-size: 14px;">Mobile Command Center</div>

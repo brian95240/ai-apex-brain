@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced A.I. 2nd Brain - Unified Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00d4ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Neural Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.9), rgba(26, 26, 46, 0.9));
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #00d4ff;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .arc-reactor {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00d4ff 0%, #0099cc 50%, #003d4d 100%);
+            box-shadow: 
+                0 0 20px #00d4ff,
+                inset 0 0 20px rgba(0, 212, 255, 0.5);
+            animation: reactorPulse 2s ease-in-out infinite;
+            position: relative;
+        }
+
+        .arc-reactor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+        }
+
+        @keyframes reactorPulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px #00d4ff, inset 0 0 20px rgba(0, 212, 255, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 40px #00d4ff, inset 0 0 30px rgba(0, 212, 255, 0.8);
+                transform: scale(1.1);
+            }
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00d4ff;
+            background: linear-gradient(45deg, #00d4ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: statusPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid #00d4ff;
+            padding: 0 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-tab.active {
+            color: #00d4ff;
+            border-bottom-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.2);
+            text-shadow: 0 0 10px #00d4ff;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-container {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .dashboard-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Frames */
+        .dashboard-frame {
+            width: 100%;
+            height: 80vh;
+            border: 2px solid #00d4ff;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Grid Layout for Multi-Dashboard View */
+        .multi-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1rem;
+            height: 80vh;
+        }
+
+        .mini-dashboard {
+            border: 2px solid #00d4ff;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mini-dashboard::before {
+            content: attr(data-title);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 212, 255, 0.9);
+            color: black;
+            padding: 0.5rem;
+            font-weight: bold;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .mini-dashboard iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            margin-top: 40px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-card {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(26, 26, 46, 0.8));
+            border: 1px solid #00d4ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .control-card h3 {
+            color: #00d4ff;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 5px #00d4ff;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .control-btn {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            border: none;
+            border-radius: 5px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+            color: #00d4ff;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 212, 255, 0.3);
+            border-top: 4px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+                padding: 0 1rem;
+            }
+
+            .nav-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .multi-dashboard {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, 300px);
+            }
+
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="arc-reactor"></div>
+                <h1 class="title">ADVANCED A.I. 2ND BRAIN</h1>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>UNIFIED COMMAND CENTER ONLINE</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" onclick="showDashboard('overview')">OVERVIEW</button>
+        <button class="nav-tab" onclick="showDashboard('swarm')">SWARM CONTROL</button>
+        <button class="nav-tab" onclick="showDashboard('prometheus')">METRICS</button>
+        <button class="nav-tab" onclick="showDashboard('grafana')">ANALYTICS</button>
+        <button class="nav-tab" onclick="showDashboard('unified')">ALL DASHBOARDS</button>
+    </nav>
+
+    <main class="main-content">
+        <!-- Overview Dashboard -->
+        <div id="overview" class="dashboard-container active">
+            <div class="control-panel">
+                <div class="control-card">
+                    <h3>🧠 System Status</h3>
+                    <div class="metric">
+                        <span>CPU Usage</span>
+                        <span class="metric-value">85%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Memory Usage</span>
+                        <span class="metric-value">72%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Active Algorithms</span>
+                        <span class="metric-value">42/42</span>
+                    </div>
+                    <div class="metric">
+                        <span>Success Rate</span>
+                        <span class="metric-value">90%</span>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <h3>🔄 Swarm Control</h3>
+                    <div class="metric">
+                        <span>Active Agents</span>
+                        <span class="metric-value">12</span>
+                    </div>
+                    <div class="metric">
+                        <span>Load Balance</span>
+                        <span class="metric-value">Optimal</span>
+                    </div>
+                    <div class="control-buttons">
+                        <button class="control-btn" onclick="executeCommand('swarm', 'scale')">Scale</button>
+                        <button class="control-btn" onclick="executeCommand('swarm', 'optimize')">Optimize</button>
+                        <button class="control-btn" onclick="executeCommand('swarm', 'reset')">Reset</button>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <h3>🤖 AI Models</h3>
+                    <div class="metric">
+                        <span>Loaded Models</span>
+                        <span class="metric-value">8</span>
+                    </div>
+                    <div class="metric">
+                        <span>Voice Banks</span>
+                        <span class="metric-value">5</span>
+                    </div>
+                    <div class="control-buttons">
+                        <button class="control-btn" onclick="executeCommand('models', 'import')">Import</button>
+                        <button class="control-btn" onclick="executeCommand('models', 'export')">Export</button>
+                        <button class="control-btn" onclick="executeCommand('voice', 'manage')">Voice</button>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <h3>☁️ Cloud Status</h3>
+                    <div class="metric">
+                        <span>Neon Database</span>
+                        <span class="metric-value">Connected</span>
+                    </div>
+                    <div class="metric">
+                        <span>Hetzner Cloud</span>
+                        <span class="metric-value">Online</span>
+                    </div>
+                    <div class="metric">
+                        <span>WebThinker</span>
+                        <span class="metric-value">Active</span>
+                    </div>
+                    <div class="metric">
+                        <span>Spider.cloud</span>
+                        <span class="metric-value">Running</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Swarm Control Dashboard -->
+        <div id="swarm" class="dashboard-container">
+            <iframe class="dashboard-frame" src="http://localhost:3000" title="Swarm Control Dashboard"></iframe>
+        </div>
+
+        <!-- Prometheus Dashboard -->
+        <div id="prometheus" class="dashboard-container">
+            <iframe class="dashboard-frame" src="http://localhost:9090" title="Prometheus Metrics"></iframe>
+        </div>
+
+        <!-- Grafana Dashboard -->
+        <div id="grafana" class="dashboard-container">
+            <iframe class="dashboard-frame" src="http://localhost:3001" title="Grafana Analytics"></iframe>
+        </div>
+
+        <!-- Unified Multi-Dashboard View -->
+        <div id="unified" class="dashboard-container">
+            <div class="multi-dashboard">
+                <div class="mini-dashboard" data-title="SWARM CONTROL">
+                    <iframe src="http://localhost:3000" title="Swarm Control"></iframe>
+                </div>
+                <div class="mini-dashboard" data-title="PROMETHEUS METRICS">
+                    <iframe src="http://localhost:9090" title="Prometheus"></iframe>
+                </div>
+                <div class="mini-dashboard" data-title="GRAFANA ANALYTICS">
+                    <iframe src="http://localhost:3001" title="Grafana"></iframe>
+                </div>
+                <div class="mini-dashboard" data-title="SYSTEM OVERVIEW">
+                    <div style="padding: 60px 20px; text-align: center; color: #00d4ff;">
+                        <h3>🧠 AI BRAIN STATUS</h3>
+                        <div style="margin: 20px 0;">
+                            <div>Algorithms: <span style="color: #00ff00;">42 Active</span></div>
+                            <div>Performance: <span style="color: #00ff00;">90% Success</span></div>
+                            <div>Learning: <span style="color: #00ff00;">44.65% Improvement</span></div>
+                            <div>Status: <span style="color: #00ff00;">Production Ready</span></div>
+                        </div>
+                        <div style="margin-top: 30px;">
+                            <button class="control-btn" onclick="window.open('https://y0h0i3cy730q.manus.space', '_blank')">
+                                Open Full Website
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Dashboard Navigation
+        function showDashboard(dashboardId) {
+            // Hide all dashboards
+            const dashboards = document.querySelectorAll('.dashboard-container');
+            dashboards.forEach(dashboard => {
+                dashboard.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected dashboard
+            document.getElementById(dashboardId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Command Execution
+        async function executeCommand(category, action) {
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            // Show loading state
+            button.textContent = '...';
+            button.disabled = true;
+
+            try {
+                // Simulate API call to backend
+                const response = await fetch(`/api/ai-brain/${category}/${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: action })
+                });
+
+                if (response.ok) {
+                    button.textContent = '✓';
+                    button.style.background = 'linear-gradient(45deg, #00ff00, #00cc00)';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                        button.disabled = false;
+                    }, 2000);
+                } else {
+                    throw new Error('Command failed');
+                }
+            } catch (error) {
+                button.textContent = '✗';
+                button.style.background = 'linear-gradient(45deg, #ff0000, #cc0000)';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                    button.disabled = false;
+                }, 2000);
+            }
+        }
+
+        // Real-time Updates
+        async function updateMetrics() {
+            try {
+                const response = await fetch('/api/ai-brain/status');
+                if (response.ok) {
+                    const data = await response.json();
+                    // Update metrics in the overview dashboard
+                    // This would update the actual values from the API
+                }
+            } catch (error) {
+                console.log('Metrics update failed:', error);
+            }
+        }
+
+        // Update metrics every 30 seconds
+        setInterval(updateMetrics, 30000);
+
+        // Initial load
+        updateMetrics();
+
+        // Handle iframe loading errors
+        document.querySelectorAll('iframe').forEach(iframe => {
+            iframe.addEventListener('error', function() {
+                this.style.display = 'none';
+                const container = this.parentElement;
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'loading';
+                errorDiv.innerHTML = '<div class="spinner"></div>Dashboard service starting...';
+                container.appendChild(errorDiv);
+            });
+        });
+    </script>
+</body>
+</html>
+

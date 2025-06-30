@@ -1,7 +1,7 @@
 {
-  "name": "AI Apex Brain Mobile Command Center",
-  "short_name": "AI Apex Brain",
-  "description": "Mobile command center for the Advanced A.I. 2nd Brain system",
+  "name": "A.I. Apex Brain Mobile Command Center",
+  "short_name": "A.I. Apex Brain",
+  "description": "Mobile command center for the A.I. Apex Brain system",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a1a",

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
 import { Progress } from '@/components/ui/progress.jsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
 import { 
   Brain, 
   Cpu, 
@@ -28,7 +29,9 @@ import {
   TrendingUp,
   Users,
   Lock,
-  Rocket
+  Rocket,
+  Grid3X3,
+  Maximize2
 } from 'lucide-react'
 import './App.css'
 
@@ -41,6 +44,8 @@ function App() {
     algorithms: 90,
     accuracy: 76
   })
+  const [apiData, setApiData] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     // Simulate real-time performance updates
@@ -53,6 +58,52 @@ function App() {
       }))
     }, 2000)
 
+    return () => clearInterval(interval)
+  }, [])
+
+  // API Functions
+  const executeCommand = async (category, action) => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/ai-brain/${category}/${action}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: action })
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Command executed:', result)
+        return result
+      } else {
+        throw new Error('Command failed')
+      }
+    } catch (error) {
+      console.error('API Error:', error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchSystemStatus = async () => {
+    try {
+      const response = await fetch('/api/ai-brain/status')
+      if (response.ok) {
+        const data = await response.json()
+        setApiData(data)
+        return data
+      }
+    } catch (error) {
+      console.error('Failed to fetch system status:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchSystemStatus()
+    const interval = setInterval(fetchSystemStatus, 30000) // Update every 30 seconds
     return () => clearInterval(interval)
   }, [])
 
@@ -145,9 +196,18 @@ function App() {
         <div className="rivet rivet-top-right"></div>
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="arc-reactor"></div>
+            <div className="metallic-brain corporate-brain">
+              <div className="brain-core">
+                <div className="brain-highlight"></div>
+                <div className="brain-neural-lines">
+                  <div className="neural-line"></div>
+                  <div className="neural-line"></div>
+                  <div className="neural-line"></div>
+                </div>
+              </div>
+            </div>
             <h1 className="text-2xl font-bold holographic-text">
-              ADVANCED A.I. 2ND BRAIN
+              A.I. APEX BRAIN
             </h1>
           </div>
           <div className="flex items-center space-x-6">
@@ -166,7 +226,16 @@ function App() {
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto text-center">
           <div className="floating-element mb-8">
-            <div className="arc-reactor mx-auto mb-6" style={{width: '120px', height: '120px'}}></div>
+            <div className="metallic-brain corporate-brain mx-auto mb-6" style={{width: '120px', height: '120px', transform: 'scale(2.5)'}}>
+              <div className="brain-core">
+                <div className="brain-highlight"></div>
+                <div className="brain-neural-lines">
+                  <div className="neural-line"></div>
+                  <div className="neural-line"></div>
+                  <div className="neural-line"></div>
+                </div>
+              </div>
+            </div>
           </div>
           <h1 className="text-6xl font-bold mb-6 holographic-text">
             NEXT-GENERATION
@@ -245,6 +314,391 @@ function App() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Unified Dashboard Section */}
+      <section className="py-20 px-4 bg-gradient-to-r from-[#0a0a0a] to-[#1a1a2e]">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4 holographic-text">
+              UNIFIED COMMAND CENTER
+            </h2>
+            <p className="text-xl text-gray-300">
+              All dashboards integrated into a single control interface
+            </p>
+          </div>
+          
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="grid w-full grid-cols-5 mb-8 bg-black/50 border border-[#00d4ff]">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-[#00d4ff] data-[state=active]:text-black">
+                <Eye className="w-4 h-4 mr-2" />
+                OVERVIEW
+              </TabsTrigger>
+              <TabsTrigger value="swarm" className="data-[state=active]:bg-[#00d4ff] data-[state=active]:text-black">
+                <Settings className="w-4 h-4 mr-2" />
+                SWARM CONTROL
+              </TabsTrigger>
+              <TabsTrigger value="prometheus" className="data-[state=active]:bg-[#00d4ff] data-[state=active]:text-black">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                METRICS
+              </TabsTrigger>
+              <TabsTrigger value="grafana" className="data-[state=active]:bg-[#00d4ff] data-[state=active]:text-black">
+                <TrendingUp className="w-4 h-4 mr-2" />
+                ANALYTICS
+              </TabsTrigger>
+              <TabsTrigger value="unified" className="data-[state=active]:bg-[#00d4ff] data-[state=active]:text-black">
+                <Grid3X3 className="w-4 h-4 mr-2" />
+                ALL DASHBOARDS
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="steel-panel glass-panel">
+                  <div className="rivet rivet-top-left"></div>
+                  <div className="rivet rivet-bottom-right"></div>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center">
+                      <Brain className="w-5 h-5 mr-2 text-[#00d4ff]" />
+                      System Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between">
+                      <span>CPU Usage</span>
+                      <span className="text-[#00ff00] font-bold">{Math.round(performanceMetrics.cpu)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Memory Usage</span>
+                      <span className="text-[#00ff00] font-bold">{Math.round(performanceMetrics.memory)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Active Algorithms</span>
+                      <span className="text-[#00ff00] font-bold">42/42</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Success Rate</span>
+                      <span className="text-[#00ff00] font-bold">{Math.round(performanceMetrics.algorithms)}%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="steel-panel glass-panel">
+                  <div className="rivet rivet-top-left"></div>
+                  <div className="rivet rivet-bottom-right"></div>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center">
+                      <Settings className="w-5 h-5 mr-2 text-[#00d4ff]" />
+                      Swarm Control
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between">
+                      <span>Active Agents</span>
+                      <span className="text-[#00ff00] font-bold">12</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Load Balance</span>
+                      <span className="text-[#00ff00] font-bold">Optimal</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      <Button 
+                        size="sm" 
+                        className="hud-button text-xs"
+                        onClick={() => executeCommand('swarm', 'scale')}
+                        disabled={loading}
+                      >
+                        {loading ? '...' : 'Scale'}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="hud-button text-xs"
+                        onClick={() => executeCommand('swarm', 'optimize')}
+                        disabled={loading}
+                      >
+                        {loading ? '...' : 'Optimize'}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="hud-button text-xs"
+                        onClick={() => executeCommand('swarm', 'reset')}
+                        disabled={loading}
+                      >
+                        {loading ? '...' : 'Reset'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="steel-panel glass-panel">
+                  <div className="rivet rivet-top-left"></div>
+                  <div className="rivet rivet-bottom-right"></div>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center">
+                      <Brain className="w-5 h-5 mr-2 text-[#00d4ff]" />
+                      AI Models
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between">
+                      <span>Loaded Models</span>
+                      <span className="text-[#00ff00] font-bold">8</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Voice Banks</span>
+                      <span className="text-[#00ff00] font-bold">5</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      <Button 
+                        size="sm" 
+                        className="hud-button text-xs"
+                        onClick={() => executeCommand('models', 'import')}
+                        disabled={loading}
+                      >
+                        {loading ? '...' : 'Import'}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="hud-button text-xs"
+                        onClick={() => executeCommand('models', 'export')}
+                        disabled={loading}
+                      >
+                        {loading ? '...' : 'Export'}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="hud-button text-xs"
+                        onClick={() => executeCommand('voice', 'manage')}
+                        disabled={loading}
+                      >
+                        {loading ? '...' : 'Voice'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="steel-panel glass-panel">
+                  <div className="rivet rivet-top-left"></div>
+                  <div className="rivet rivet-bottom-right"></div>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center">
+                      <Cloud className="w-5 h-5 mr-2 text-[#00d4ff]" />
+                      Cloud Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between">
+                      <span>Neon Database</span>
+                      <span className="text-[#00ff00] font-bold">Connected</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Hetzner Cloud</span>
+                      <span className="text-[#00ff00] font-bold">Online</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>WebThinker</span>
+                      <span className="text-[#00ff00] font-bold">Active</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Spider.cloud</span>
+                      <span className="text-[#00ff00] font-bold">Running</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="swarm">
+              <Card className="steel-panel glass-panel">
+                <div className="rivet rivet-top-left"></div>
+                <div className="rivet rivet-top-right"></div>
+                <div className="rivet rivet-bottom-left"></div>
+                <div className="rivet rivet-bottom-right"></div>
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center">
+                    <Settings className="w-6 h-6 mr-2 text-[#00d4ff]" />
+                    Swarm Control Dashboard
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="w-full h-[600px] border-2 border-[#00d4ff] rounded-lg overflow-hidden">
+                    <iframe 
+                      src="http://localhost:3000" 
+                      className="w-full h-full"
+                      title="Swarm Control Dashboard"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="prometheus">
+              <Card className="steel-panel glass-panel">
+                <div className="rivet rivet-top-left"></div>
+                <div className="rivet rivet-top-right"></div>
+                <div className="rivet rivet-bottom-left"></div>
+                <div className="rivet rivet-bottom-right"></div>
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center">
+                    <BarChart3 className="w-6 h-6 mr-2 text-[#00d4ff]" />
+                    Prometheus Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="w-full h-[600px] border-2 border-[#00d4ff] rounded-lg overflow-hidden">
+                    <iframe 
+                      src="http://localhost:9090" 
+                      className="w-full h-full"
+                      title="Prometheus Metrics"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="grafana">
+              <Card className="steel-panel glass-panel">
+                <div className="rivet rivet-top-left"></div>
+                <div className="rivet rivet-top-right"></div>
+                <div className="rivet rivet-bottom-left"></div>
+                <div className="rivet rivet-bottom-right"></div>
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center">
+                    <TrendingUp className="w-6 h-6 mr-2 text-[#00d4ff]" />
+                    Grafana Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="w-full h-[600px] border-2 border-[#00d4ff] rounded-lg overflow-hidden">
+                    <iframe 
+                      src="http://localhost:3001" 
+                      className="w-full h-full"
+                      title="Grafana Analytics"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="unified">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="steel-panel glass-panel">
+                  <div className="rivet rivet-top-left"></div>
+                  <div className="rivet rivet-top-right"></div>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      <span className="flex items-center">
+                        <Settings className="w-5 h-5 mr-2 text-[#00d4ff]" />
+                        SWARM CONTROL
+                      </span>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.open('http://localhost:3000', '_blank')}
+                      >
+                        <Maximize2 className="w-4 h-4" />
+                      </Button>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="w-full h-[280px] border border-[#00d4ff] rounded overflow-hidden">
+                      <iframe 
+                        src="http://localhost:3000" 
+                        className="w-full h-full"
+                        title="Swarm Control"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="steel-panel glass-panel">
+                  <div className="rivet rivet-top-left"></div>
+                  <div className="rivet rivet-top-right"></div>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      <span className="flex items-center">
+                        <BarChart3 className="w-5 h-5 mr-2 text-[#00d4ff]" />
+                        PROMETHEUS METRICS
+                      </span>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.open('http://localhost:9090', '_blank')}
+                      >
+                        <Maximize2 className="w-4 h-4" />
+                      </Button>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="w-full h-[280px] border border-[#00d4ff] rounded overflow-hidden">
+                      <iframe 
+                        src="http://localhost:9090" 
+                        className="w-full h-full"
+                        title="Prometheus"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="steel-panel glass-panel">
+                  <div className="rivet rivet-top-left"></div>
+                  <div className="rivet rivet-top-right"></div>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      <span className="flex items-center">
+                        <TrendingUp className="w-5 h-5 mr-2 text-[#00d4ff]" />
+                        GRAFANA ANALYTICS
+                      </span>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.open('http://localhost:3001', '_blank')}
+                      >
+                        <Maximize2 className="w-4 h-4" />
+                      </Button>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="w-full h-[280px] border border-[#00d4ff] rounded overflow-hidden">
+                      <iframe 
+                        src="http://localhost:3001" 
+                        className="w-full h-full"
+                        title="Grafana"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="steel-panel glass-panel">
+                  <div className="rivet rivet-top-left"></div>
+                  <div className="rivet rivet-top-right"></div>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center">
+                      <Brain className="w-5 h-5 mr-2 text-[#00d4ff]" />
+                      SYSTEM OVERVIEW
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center space-y-4">
+                    <div className="space-y-2">
+                      <div>Algorithms: <span className="text-[#00ff00] font-bold">42 Active</span></div>
+                      <div>Performance: <span className="text-[#00ff00] font-bold">90% Success</span></div>
+                      <div>Learning: <span className="text-[#00ff00] font-bold">44.65% Improvement</span></div>
+                      <div>Status: <span className="text-[#00ff00] font-bold">Production Ready</span></div>
+                    </div>
+                    <div className="pt-4">
+                      <Button 
+                        className="hud-button"
+                        onClick={() => window.open('https://y0h0i3cy730q.manus.space', '_blank')}
+                      >
+                        Open Full Website
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
 
