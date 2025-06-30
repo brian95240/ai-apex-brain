@@ -1,0 +1,403 @@
+{
+  "test_summary": {
+    "start_time": "2025-06-30T09:29:55.357114",
+    "end_time": "2025-06-30T09:30:29.830968",
+    "total_duration_seconds": 34.473854,
+    "total_tests": 10,
+    "successful_tests": 9,
+    "success_rate": 0.9,
+    "avg_execution_time": 3.2559780836105348,
+    "avg_accuracy_score": 0.7590952380952382
+  },
+  "algorithm_performance": {
+    "pattern_recognition": {
+      "usage_count": 1,
+      "avg_execution_time": 1.5030229091644287,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8
+    },
+    "k_means": {
+      "usage_count": 1,
+      "avg_execution_time": 1.5030229091644287,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8
+    },
+    "text_classification": {
+      "usage_count": 2,
+      "avg_execution_time": 2.504509449005127,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.7904761904761904
+    },
+    "linear_regression": {
+      "usage_count": 1,
+      "avg_execution_time": 1.5029284954071045,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8
+    },
+    "self_modification": {
+      "usage_count": 2,
+      "avg_execution_time": 3.5057952404022217,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.855
+    },
+    "dijkstra": {
+      "usage_count": 1,
+      "avg_execution_time": 2.5047929286956787,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8666666666666667
+    },
+    "a_star": {
+      "usage_count": 1,
+      "avg_execution_time": 2.5047929286956787,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8666666666666667
+    },
+    "swarm_intelligence": {
+      "usage_count": 2,
+      "avg_execution_time": 3.7571730613708496,
+      "success_rate": 0.5,
+      "avg_accuracy": 0.6166666666666667
+    },
+    "risk_analysis": {
+      "usage_count": 2,
+      "avg_execution_time": 2.5052343606948853,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8666666666666667
+    },
+    "hierarchical_decomposition": {
+      "usage_count": 2,
+      "avg_execution_time": 3.005441665649414,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8238095238095238
+    },
+    "causal_discovery": {
+      "usage_count": 2,
+      "avg_execution_time": 3.255964517593384,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.7916666666666666
+    },
+    "time_series_forecasting": {
+      "usage_count": 1,
+      "avg_execution_time": 2.0038247108459473,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8666666666666667
+    },
+    "multi_objective_optimization": {
+      "usage_count": 2,
+      "avg_execution_time": 3.506688952445984,
+      "success_rate": 0.5,
+      "avg_accuracy": 0.6166666666666667
+    },
+    "collaborative_filtering": {
+      "usage_count": 1,
+      "avg_execution_time": 2.0038247108459473,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8666666666666667
+    },
+    "neural_architecture_search": {
+      "usage_count": 1,
+      "avg_execution_time": 2.505675792694092,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8666666666666667
+    },
+    "hyperparameter_optimization": {
+      "usage_count": 1,
+      "avg_execution_time": 2.505675792694092,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8666666666666667
+    },
+    "ensemble_methods": {
+      "usage_count": 1,
+      "avg_execution_time": 2.505675792694092,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8666666666666667
+    },
+    "genetic_algorithm": {
+      "usage_count": 1,
+      "avg_execution_time": 4.007126092910767,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.6166666666666667
+    },
+    "adaptive_optimization": {
+      "usage_count": 1,
+      "avg_execution_time": 4.007126092910767,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.6166666666666667
+    },
+    "deep_learning": {
+      "usage_count": 2,
+      "avg_execution_time": 4.757894039154053,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.7633333333333333
+    },
+    "reinforcement_learning": {
+      "usage_count": 1,
+      "avg_execution_time": 3.5060904026031494,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.7809523809523808
+    },
+    "self_optimization": {
+      "usage_count": 2,
+      "avg_execution_time": 4.507376194000244,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.8454761904761904
+    },
+    "fractal_analysis": {
+      "usage_count": 1,
+      "avg_execution_time": 4.50810432434082,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.7166666666666666
+    },
+    "clustering": {
+      "usage_count": 2,
+      "avg_execution_time": 4.75882875919342,
+      "success_rate": 0.5,
+      "avg_accuracy": 0.5416666666666666
+    },
+    "nlp_processing": {
+      "usage_count": 1,
+      "avg_execution_time": 5.0095531940460205,
+      "success_rate": 0.0,
+      "avg_accuracy": 0.36666666666666664
+    },
+    "financial_modeling": {
+      "usage_count": 1,
+      "avg_execution_time": 5.0095531940460205,
+      "success_rate": 0.0,
+      "avg_accuracy": 0.36666666666666664
+    },
+    "genetic_programming": {
+      "usage_count": 1,
+      "avg_execution_time": 5.508661985397339,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.9099999999999999
+    },
+    "algorithm_evolution": {
+      "usage_count": 1,
+      "avg_execution_time": 5.508661985397339,
+      "success_rate": 1.0,
+      "avg_accuracy": 0.9099999999999999
+    }
+  },
+  "recursive_analysis": {
+    "max_depth_reached": 7,
+    "depth_distribution": {
+      "1": 3,
+      "2": 1,
+      "3": 2,
+      "4": 2,
+      "5": 1,
+      "7": 1
+    },
+    "recursive_efficiency": 3.1
+  },
+  "performance_trends": {
+    "execution_time_trend": "degrading",
+    "accuracy_trend": "degrading",
+    "early_avg_time": 2.00404896736145,
+    "late_avg_time": 4.507907199859619,
+    "early_avg_accuracy": 0.8400000000000001,
+    "late_avg_accuracy": 0.678190476190476
+  },
+  "optimization_recommendations": [],
+  "detailed_results": [
+    {
+      "question_id": "local_001",
+      "success": true,
+      "execution_time": 1.5030229091644287,
+      "algorithms_used": [
+        "pattern_recognition",
+        "k_means"
+      ],
+      "recursive_depth_reached": 1,
+      "accuracy_score": 0.8,
+      "resource_usage": {
+        "cpu_percent": 0.3,
+        "memory_percent": 30.9,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:29:56.860709"
+    },
+    {
+      "question_id": "local_002",
+      "success": true,
+      "execution_time": 1.5029284954071045,
+      "algorithms_used": [
+        "text_classification",
+        "linear_regression",
+        "self_modification"
+      ],
+      "recursive_depth_reached": 1,
+      "accuracy_score": 0.8,
+      "resource_usage": {
+        "cpu_percent": 0.7,
+        "memory_percent": 30.9,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:29:58.465158"
+    },
+    {
+      "question_id": "local_003",
+      "success": true,
+      "execution_time": 2.5047929286956787,
+      "algorithms_used": [
+        "dijkstra",
+        "a_star",
+        "swarm_intelligence",
+        "risk_analysis",
+        "hierarchical_decomposition"
+      ],
+      "recursive_depth_reached": 2,
+      "accuracy_score": 0.8666666666666667,
+      "resource_usage": {
+        "cpu_percent": 0.5,
+        "memory_percent": 30.9,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:30:01.071196"
+    },
+    {
+      "question_id": "local_004",
+      "success": true,
+      "execution_time": 2.0038247108459473,
+      "algorithms_used": [
+        "causal_discovery",
+        "time_series_forecasting",
+        "multi_objective_optimization",
+        "collaborative_filtering"
+      ],
+      "recursive_depth_reached": 3,
+      "accuracy_score": 0.8666666666666667,
+      "resource_usage": {
+        "cpu_percent": 1.2,
+        "memory_percent": 30.9,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:30:04.077136"
+    },
+    {
+      "question_id": "local_005",
+      "success": true,
+      "execution_time": 2.505675792694092,
+      "algorithms_used": [
+        "neural_architecture_search",
+        "hyperparameter_optimization",
+        "risk_analysis",
+        "ensemble_methods"
+      ],
+      "recursive_depth_reached": 4,
+      "accuracy_score": 0.8666666666666667,
+      "resource_usage": {
+        "cpu_percent": 0.3,
+        "memory_percent": 30.9,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:30:06.683974"
+    },
+    {
+      "question_id": "local_006",
+      "success": true,
+      "execution_time": 4.007126092910767,
+      "algorithms_used": [
+        "genetic_algorithm",
+        "adaptive_optimization",
+        "deep_learning"
+      ],
+      "recursive_depth_reached": 1,
+      "accuracy_score": 0.6166666666666667,
+      "resource_usage": {
+        "cpu_percent": 0.6,
+        "memory_percent": 30.9,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:30:10.792271"
+    },
+    {
+      "question_id": "local_007",
+      "success": true,
+      "execution_time": 3.5060904026031494,
+      "algorithms_used": [
+        "reinforcement_learning",
+        "self_optimization",
+        "hierarchical_decomposition",
+        "text_classification"
+      ],
+      "recursive_depth_reached": 5,
+      "accuracy_score": 0.7809523809523808,
+      "resource_usage": {
+        "cpu_percent": 1.3,
+        "memory_percent": 30.9,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:30:14.399586"
+    },
+    {
+      "question_id": "local_008",
+      "success": true,
+      "execution_time": 4.50810432434082,
+      "algorithms_used": [
+        "fractal_analysis",
+        "causal_discovery",
+        "clustering"
+      ],
+      "recursive_depth_reached": 4,
+      "accuracy_score": 0.7166666666666666,
+      "resource_usage": {
+        "cpu_percent": 1.1,
+        "memory_percent": 30.9,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:30:19.009045"
+    },
+    {
+      "question_id": "local_009",
+      "success": false,
+      "execution_time": 5.0095531940460205,
+      "algorithms_used": [
+        "multi_objective_optimization",
+        "swarm_intelligence",
+        "nlp_processing",
+        "clustering",
+        "financial_modeling"
+      ],
+      "recursive_depth_reached": 3,
+      "accuracy_score": 0.36666666666666664,
+      "resource_usage": {
+        "cpu_percent": 0.7,
+        "memory_percent": 31.0,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:30:24.120069"
+    },
+    {
+      "question_id": "local_010",
+      "success": true,
+      "execution_time": 5.508661985397339,
+      "algorithms_used": [
+        "genetic_programming",
+        "self_modification",
+        "algorithm_evolution",
+        "self_optimization",
+        "deep_learning"
+      ],
+      "recursive_depth_reached": 7,
+      "accuracy_score": 0.9099999999999999,
+      "resource_usage": {
+        "cpu_percent": 0.5,
+        "memory_percent": 31.0,
+        "disk_usage": 38.6
+      },
+      "error_message": null,
+      "timestamp": "2025-06-30 09:30:29.730351"
+    }
+  ]
+}

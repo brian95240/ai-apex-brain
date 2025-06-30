@@ -442,7 +442,7 @@ class SwarmControlDashboard:
         self.connected_clients -= disconnected_clients
     
     def _get_dashboard_html(self) -> str:
-        """Get the dashboard HTML"""
+        """Get the enhanced Ironman-style dashboard HTML"""
         return """
         <!DOCTYPE html>
         <html lang="en">
@@ -454,24 +454,431 @@ class SwarmControlDashboard:
             <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
             <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
             <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+            <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
             <style>
-                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #1a1a1a; color: #fff; }
-                .dashboard { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-                .panel { background: #2d2d2d; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-                .metric { display: flex; justify-content: space-between; margin: 10px 0; }
-                .metric-value { font-weight: bold; color: #4CAF50; }
-                .alert-red { color: #f44336; }
-                .alert-yellow { color: #ff9800; }
-                .control-group { margin: 15px 0; }
-                .slider { width: 100%; margin: 10px 0; }
-                .button { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
-                .button:hover { background: #45a049; }
-                .emergency-button { background: #f44336; }
-                .emergency-button:hover { background: #da190b; }
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+
+                body {
+                    font-family: 'Orbitron', 'Arial', sans-serif;
+                    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
+                    color: #00d4ff;
+                    overflow-x: hidden;
+                    min-height: 100vh;
+                    position: relative;
+                }
+
+                /* Ironman-style background texture */
+                body::before {
+                    content: '';
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: 
+                        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 1px, transparent 1px),
+                        linear-gradient(45deg, transparent 49%, rgba(0,212,255,0.03) 50%, transparent 51%);
+                    background-size: 50px 50px, 30px 30px, 100px 100px;
+                    pointer-events: none;
+                    z-index: -1;
+                }
+
+                .container {
+                    max-width: 1400px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    position: relative;
+                }
+
+                .logo {
+                    font-size: 36px;
+                    font-weight: 900;
+                    color: #00d4ff;
+                    text-shadow: 0 0 30px #00d4ff;
+                    margin-bottom: 10px;
+                    position: relative;
+                    letter-spacing: 3px;
+                }
+
+                .logo::before {
+                    content: '🧠';
+                    position: absolute;
+                    left: -60px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    font-size: 40px;
+                    filter: drop-shadow(0 0 15px #00d4ff);
+                }
+
+                .status-indicator {
+                    display: inline-block;
+                    width: 15px;
+                    height: 15px;
+                    background: #00ff00;
+                    border-radius: 50%;
+                    margin-left: 15px;
+                    box-shadow: 0 0 20px #00ff00;
+                    animation: pulse 2s infinite;
+                }
+
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.7; transform: scale(1.1); }
+                }
+
+                .dashboard {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                    gap: 25px;
+                    margin-bottom: 30px;
+                }
+
+                .panel {
+                    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+                    border: 2px solid #444;
+                    border-radius: 15px;
+                    padding: 25px;
+                    position: relative;
+                    box-shadow: 
+                        inset 0 0 30px rgba(0,212,255,0.1),
+                        0 8px 25px rgba(0,0,0,0.6),
+                        0 0 50px rgba(0,212,255,0.05);
+                    transition: all 0.3s ease;
+                }
+
+                .panel:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 
+                        inset 0 0 40px rgba(0,212,255,0.15),
+                        0 12px 35px rgba(0,0,0,0.8),
+                        0 0 60px rgba(0,212,255,0.1);
+                }
+
+                /* Realistic rivets */
+                .panel::before,
+                .panel::after {
+                    content: '';
+                    position: absolute;
+                    width: 12px;
+                    height: 12px;
+                    background: radial-gradient(circle, #888 20%, #555 50%, #333 80%);
+                    border-radius: 50%;
+                    box-shadow: 
+                        inset 0 2px 4px rgba(255,255,255,0.3),
+                        inset 0 -2px 4px rgba(0,0,0,0.5),
+                        0 0 10px rgba(0,212,255,0.2);
+                }
+
+                .panel::before {
+                    top: 15px;
+                    left: 15px;
+                }
+
+                .panel::after {
+                    top: 15px;
+                    right: 15px;
+                }
+
+                /* Additional rivets */
+                .panel .rivet-bottom-left,
+                .panel .rivet-bottom-right {
+                    position: absolute;
+                    width: 12px;
+                    height: 12px;
+                    background: radial-gradient(circle, #888 20%, #555 50%, #333 80%);
+                    border-radius: 50%;
+                    box-shadow: 
+                        inset 0 2px 4px rgba(255,255,255,0.3),
+                        inset 0 -2px 4px rgba(0,0,0,0.5),
+                        0 0 10px rgba(0,212,255,0.2);
+                }
+
+                .panel .rivet-bottom-left {
+                    bottom: 15px;
+                    left: 15px;
+                }
+
+                .panel .rivet-bottom-right {
+                    bottom: 15px;
+                    right: 15px;
+                }
+
+                .panel-title {
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: #00d4ff;
+                    margin-bottom: 20px;
+                    text-align: center;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    text-shadow: 0 0 15px #00d4ff;
+                    position: relative;
+                    padding-bottom: 10px;
+                }
+
+                .panel-title::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 60%;
+                    height: 2px;
+                    background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+                    box-shadow: 0 0 10px #00d4ff;
+                }
+
+                .metric {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin: 15px 0;
+                    padding: 12px;
+                    background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+                    border: 1px solid #333;
+                    border-radius: 8px;
+                    transition: all 0.3s ease;
+                }
+
+                .metric:hover {
+                    border-color: #00d4ff;
+                    box-shadow: 0 0 15px rgba(0,212,255,0.3);
+                }
+
+                .metric-label {
+                    font-size: 14px;
+                    color: #ccc;
+                    font-weight: 400;
+                }
+
+                .metric-value {
+                    font-weight: 700;
+                    font-size: 16px;
+                    color: #00ff00;
+                    text-shadow: 0 0 10px #00ff00;
+                }
+
+                .alert-red {
+                    color: #ff4444 !important;
+                    text-shadow: 0 0 10px #ff4444 !important;
+                }
+
+                .alert-yellow {
+                    color: #ffaa00 !important;
+                    text-shadow: 0 0 10px #ffaa00 !important;
+                }
+
+                .control-group {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+                    border: 1px solid #333;
+                    border-radius: 10px;
+                }
+
+                .control-label {
+                    display: block;
+                    margin-bottom: 10px;
+                    font-size: 14px;
+                    color: #00d4ff;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
+
+                .slider {
+                    width: 100%;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: linear-gradient(90deg, #333, #555);
+                    outline: none;
+                    margin: 10px 0;
+                    cursor: pointer;
+                    -webkit-appearance: none;
+                    appearance: none;
+                }
+
+                .slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: linear-gradient(145deg, #00d4ff, #0099cc);
+                    cursor: pointer;
+                    box-shadow: 0 0 15px rgba(0,212,255,0.5);
+                    border: 2px solid #333;
+                }
+
+                .slider::-moz-range-thumb {
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: linear-gradient(145deg, #00d4ff, #0099cc);
+                    cursor: pointer;
+                    box-shadow: 0 0 15px rgba(0,212,255,0.5);
+                    border: 2px solid #333;
+                }
+
+                .button {
+                    background: linear-gradient(145deg, #00d4ff, #0099cc);
+                    color: #000;
+                    border: 2px solid #333;
+                    padding: 12px 25px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 700;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(0,212,255,0.3);
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .button::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                    transition: left 0.5s ease;
+                }
+
+                .button:hover::before {
+                    left: 100%;
+                }
+
+                .button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(0,212,255,0.5);
+                }
+
+                .emergency-button {
+                    background: linear-gradient(145deg, #ff4444, #cc0000) !important;
+                    color: white !important;
+                    box-shadow: 0 4px 15px rgba(255,68,68,0.3) !important;
+                    width: 100%;
+                    margin-top: 20px;
+                    font-size: 16px;
+                    padding: 15px;
+                }
+
+                .emergency-button:hover {
+                    box-shadow: 0 6px 25px rgba(255,68,68,0.6) !important;
+                    transform: translateY(-3px);
+                }
+
+                .additional-controls {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 15px;
+                    margin-top: 30px;
+                }
+
+                .control-button {
+                    background: linear-gradient(145deg, #333, #222);
+                    border: 2px solid #555;
+                    border-radius: 10px;
+                    color: #00d4ff;
+                    padding: 15px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-align: center;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .control-button::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent);
+                    transition: left 0.5s ease;
+                }
+
+                .control-button:hover::before {
+                    left: 100%;
+                }
+
+                .control-button:hover {
+                    border-color: #00d4ff;
+                    box-shadow: 0 0 20px rgba(0,212,255,0.3);
+                    transform: translateY(-2px);
+                }
+
+                /* Mobile responsiveness */
+                @media (max-width: 768px) {
+                    .dashboard {
+                        grid-template-columns: 1fr;
+                    }
+                    
+                    .additional-controls {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+                    
+                    .logo {
+                        font-size: 28px;
+                    }
+                    
+                    .logo::before {
+                        left: -45px;
+                        font-size: 32px;
+                    }
+                }
+
+                /* Loading animation */
+                .loading {
+                    display: inline-block;
+                    width: 20px;
+                    height: 20px;
+                    border: 2px solid #444;
+                    border-top: 2px solid #00d4ff;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin-right: 10px;
+                }
+
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
             </style>
         </head>
         <body>
-            <div id="root"></div>
+            <div class="container">
+                <div class="header">
+                    <div class="logo">
+                        AI APEX BRAIN
+                        <span class="status-indicator" id="statusIndicator"></span>
+                    </div>
+                    <div style="color: #888; font-size: 16px; margin-top: 10px;">
+                        Granular Swarm Control Dashboard
+                    </div>
+                </div>
+                <div id="root"></div>
+            </div>
             
             <script type="text/babel">
                 const { useState, useEffect } = React;
@@ -486,8 +893,14 @@ class SwarmControlDashboard:
                         // WebSocket connection for real-time updates
                         const ws = new WebSocket(`ws://${window.location.host}/ws`);
                         
-                        ws.onopen = () => setConnected(true);
-                        ws.onclose = () => setConnected(false);
+                        ws.onopen = () => {
+                            setConnected(true);
+                            document.getElementById('statusIndicator').style.background = '#00ff00';
+                        };
+                        ws.onclose = () => {
+                            setConnected(false);
+                            document.getElementById('statusIndicator').style.background = '#ff4444';
+                        };
                         ws.onmessage = (event) => {
                             const data = JSON.parse(event.data);
                             if (data.type === 'realtime_update') {
@@ -515,38 +928,65 @@ class SwarmControlDashboard:
                     };
                     
                     const emergencyStop = async () => {
-                        if (confirm('Are you sure you want to activate emergency stop?')) {
+                        if (confirm('⚠️ EMERGENCY STOP\\n\\nThis will immediately halt all AI operations.\\nAre you sure you want to proceed?')) {
                             await fetch('/api/emergency-stop', { method: 'POST' });
                         }
+                    };
+
+                    const importModels = () => {
+                        alert('🔄 Model import interface will open...');
+                    };
+
+                    const exportModels = () => {
+                        alert('📤 Exporting current models...');
+                    };
+
+                    const importVoiceBanks = () => {
+                        alert('🎵 Voice bank import interface will open...');
+                    };
+
+                    const exportVoiceBanks = () => {
+                        alert('🔊 Exporting voice banks...');
+                    };
+
+                    const openPrometheus = () => {
+                        window.open('http://localhost:9090', '_blank');
+                    };
+
+                    const openGrafana = () => {
+                        window.open('http://localhost:3001', '_blank');
+                    };
+
+                    const systemDiagnostics = () => {
+                        alert('🔧 Running comprehensive system diagnostics...');
+                    };
+
+                    const optimizePerformance = () => {
+                        alert('⚡ Optimizing system performance...');
                     };
                     
                     return (
                         <div>
-                            <h1>🧠 AI Apex Brain - Granular Swarm Control</h1>
-                            <div style={{marginBottom: '20px'}}>
-                                Status: <span style={{color: connected ? '#4CAF50' : '#f44336'}}>
-                                    {connected ? 'Connected' : 'Disconnected'}
-                                </span>
-                            </div>
-                            
                             <div className="dashboard">
                                 {/* Cost & Budget Panel */}
                                 <div className="panel">
-                                    <h3>💰 Cost & Budget</h3>
+                                    <div className="rivet-bottom-left"></div>
+                                    <div className="rivet-bottom-right"></div>
+                                    <h3 className="panel-title">💰 Cost & Budget</h3>
                                     <div className="metric">
-                                        <span>Hourly Spent:</span>
+                                        <span className="metric-label">Hourly Spent:</span>
                                         <span className="metric-value">${budget.hourly_spent?.toFixed(4) || '0.0000'}</span>
                                     </div>
                                     <div className="metric">
-                                        <span>Daily Spent:</span>
+                                        <span className="metric-label">Daily Spent:</span>
                                         <span className="metric-value">${budget.daily_spent?.toFixed(4) || '0.0000'}</span>
                                     </div>
                                     <div className="metric">
-                                        <span>Burn Rate:</span>
+                                        <span className="metric-label">Burn Rate:</span>
                                         <span className="metric-value">${budget.burn_rate?.toFixed(4) || '0.0000'}/hr</span>
                                     </div>
                                     <div className="metric">
-                                        <span>Alert Level:</span>
+                                        <span className="metric-label">Alert Level:</span>
                                         <span className={`metric-value alert-${budget.alert_level || 'green'}`}>
                                             {budget.alert_level?.toUpperCase() || 'GREEN'}
                                         </span>
@@ -555,30 +995,34 @@ class SwarmControlDashboard:
                                 
                                 {/* Resource Monitoring Panel */}
                                 <div className="panel">
-                                    <h3>📊 Resource Usage</h3>
+                                    <div className="rivet-bottom-left"></div>
+                                    <div className="rivet-bottom-right"></div>
+                                    <h3 className="panel-title">📊 Resource Usage</h3>
                                     <div className="metric">
-                                        <span>CPU Usage:</span>
+                                        <span className="metric-label">CPU Usage:</span>
                                         <span className="metric-value">{resources.cpu_usage?.toFixed(1) || '0.0'}%</span>
                                     </div>
                                     <div className="metric">
-                                        <span>Memory Usage:</span>
+                                        <span className="metric-label">Memory Usage:</span>
                                         <span className="metric-value">{resources.memory_usage?.toFixed(1) || '0.0'}%</span>
                                     </div>
                                     <div className="metric">
-                                        <span>Active Algorithms:</span>
+                                        <span className="metric-label">Active Algorithms:</span>
                                         <span className="metric-value">{resources.active_algorithms || 0}</span>
                                     </div>
                                     <div className="metric">
-                                        <span>Queue Length:</span>
+                                        <span className="metric-label">Queue Length:</span>
                                         <span className="metric-value">{resources.queue_length || 0}</span>
                                     </div>
                                 </div>
                                 
                                 {/* Swarm Configuration Panel */}
                                 <div className="panel">
-                                    <h3>🤖 Swarm Configuration</h3>
+                                    <div className="rivet-bottom-left"></div>
+                                    <div className="rivet-bottom-right"></div>
+                                    <h3 className="panel-title">🤖 Swarm Configuration</h3>
                                     <div className="control-group">
-                                        <label>Reasoning Agents: {config.reasoning_agents || 3}</label>
+                                        <label className="control-label">Reasoning Agents: {config.reasoning_agents || 3}</label>
                                         <input 
                                             type="range" 
                                             min="1" 
@@ -589,7 +1033,7 @@ class SwarmControlDashboard:
                                         />
                                     </div>
                                     <div className="control-group">
-                                        <label>Technical Agents: {config.technical_agents || 2}</label>
+                                        <label className="control-label">Technical Agents: {config.technical_agents || 2}</label>
                                         <input 
                                             type="range" 
                                             min="1" 
@@ -600,7 +1044,7 @@ class SwarmControlDashboard:
                                         />
                                     </div>
                                     <div className="control-group">
-                                        <label>Quality Threshold: {(config.quality_threshold * 100 || 85).toFixed(0)}%</label>
+                                        <label className="control-label">Quality Threshold: {(config.quality_threshold * 100 || 85).toFixed(0)}%</label>
                                         <input 
                                             type="range" 
                                             min="50" 
@@ -614,6 +1058,34 @@ class SwarmControlDashboard:
                                         🚨 Emergency Stop
                                     </button>
                                 </div>
+                            </div>
+
+                            {/* Additional Control Buttons */}
+                            <div className="additional-controls">
+                                <button className="control-button" onClick={importModels}>
+                                    📥 Import AI Models
+                                </button>
+                                <button className="control-button" onClick={exportModels}>
+                                    📤 Export AI Models
+                                </button>
+                                <button className="control-button" onClick={importVoiceBanks}>
+                                    🎵 Import Voice Banks
+                                </button>
+                                <button className="control-button" onClick={exportVoiceBanks}>
+                                    🔊 Export Voice Banks
+                                </button>
+                                <button className="control-button" onClick={openPrometheus}>
+                                    📈 Prometheus Metrics
+                                </button>
+                                <button className="control-button" onClick={openGrafana}>
+                                    📊 Grafana Dashboard
+                                </button>
+                                <button className="control-button" onClick={systemDiagnostics}>
+                                    🔧 System Diagnostics
+                                </button>
+                                <button className="control-button" onClick={optimizePerformance}>
+                                    ⚡ Optimize Performance
+                                </button>
                             </div>
                         </div>
                     );
